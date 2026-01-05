@@ -1,42 +1,288 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Georgia', serif;
+  background-color: #f5f5f5;
+}
+
+/* Header Styles */
+header {
+  background-color: #e8e8e8;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Updated Search Styles */
+.search-container {
+  display: flex;
+  align-items: center;
+  background-color: #a8a8a8;
+  border-radius: 25px;
+  padding: 5px 5px 5px 20px;
+  min-width: 350px;
+}
+
+.search-input {
+  background: transparent;
+  border: none;
+  color: white;
+  font-style: italic;
+  font-size: 16px;
+  width: 100%;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.search-btn {
+  background-color: #333;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;         /* Centers the icon horizontally */
+  align-items: center;    /* Centers the icon vertically */
+  justify-content: center;/* Centers the icon horizontally */
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.search-btn svg {
+  display: block; /* Prevents tiny alignment gaps */
+}
+
+.search-btn:hover {
+  background-color: #000;
+  transform: scale(1.05);
+}
+
+/* Navigation Styles */
+nav {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+nav a {
+  color: #333;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+nav a:hover {
+  color: #666;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-signup {
+  background-color: transparent;
+  border: 2px solid #333;
+  padding: 10px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000;
+}
+
+.btn-login {
+  background-color: #333;
+  color: white;
+  border: 2px solid #333;
+  padding: 10px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.btn-signup:hover,
+.btn-login:hover {
+  opacity: 0.8;
+}
+
+/* Main Content */
+main {
+  flex: 1;
+  max-width: 1400px;
+  margin: 60px auto;
+  padding: 0 40px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 42px;
+  margin-bottom: 60px;
+  color: #333;
+}
+
+.profiles-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  margin-bottom: 80px;
+  align-items: stretch; /* Forces all cards in a row to be the same height */
+}
+
+.profile-card {
+  background-color: #4a4a4a;
+  border-radius: 15px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column; /* Stacks header on top of body */
+  height: 100%; /* Makes the card fill the entire grid cell */
+}
+
+.card-header {
+  position: relative;
+  padding: 20px;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.more-options, .add-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(0,0,0,0.3);
+  border: none;
+  color: white;
+  cursor: pointer;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.more-options { font-size: 24px; background: none; }
+
+.add-button {
+  font-size: 28px;
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.profile-image-container {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 15px;
 }
 
-.card {
-  padding: 2em;
+.profile-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #666;
+  border: 4px solid #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
 }
 
-.read-the-docs {
-  color: #888;
+.profile-name {
+  color: white;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.interests {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.interest-tag {
+  background-color: #888;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 15px;
+  font-size: 13px;
+}
+
+.card-body {
+  background-color: #d4d4d4;
+  padding: 20px;
+  color: #000;
+
+  
+  flex-grow: 1; 
+  display: flex;
+  flex-direction: column;
+}
+
+.email { font-size: 13px; margin-bottom: 12px; }
+.bio {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-top: 5px;
+}
+
+/* Footer */
+footer {
+  background-color: #3a3a3a;
+  padding: 40px;
+  text-align: center;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.social-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.social-icon:hover { transform: scale(1.1); }
+.instagram { background: linear-gradient(45deg, #f09433, #bc1888); }
+.twitter { background-color: #000; }
+.youtube { background-color: #ff0000; }
+.social-icon svg { width: 28px; height: 28px; fill: white; }
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .profiles-container { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .profiles-container { grid-template-columns: 1fr; }
+  header { flex-direction: column; gap: 20px; }
+  .search-container { min-width: 90%; }
+}
+
+.search-input:focus {
+  border-bottom: 1px solid white;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Forces the app to be at least the full height of the screen */
 }
