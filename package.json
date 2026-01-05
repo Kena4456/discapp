@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "express": "^5.2.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.11.0"
@@ -24,8 +25,22 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "nodemon": "^3.1.11",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"
-  }
+  },
+  "description": "This project is a React-based web application designed to help users find and connect with various profiles.",
+  "main": "eslint.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://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@github.com/Kena4456/discapp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kena4456/discapp/issues"
+  },
+  "homepage": "https://github.com/Kena4456/discapp#readme"
 }

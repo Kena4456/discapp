@@ -180,21 +180,15 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <header>
-        <div className="search-container">
-          <input 
-            type="text" 
-            placeholder="What are you looking for?" 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-          <button className="search-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m21 21-4.35-4.35"/>
-            </svg>
-          </button>
-        </div>
+          <div className="search-container">
+            <input 
+              type="text" 
+              placeholder="What are you looking for?" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+          </div>
           <NavBar />
           <div className="auth-buttons">
             <button className="btn-signup">Sign up</button>
@@ -220,3 +214,262 @@ function App() {
 }
 
 export default App;
+
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Georgia', serif;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  max-width: 1400px;
+  margin: 60px auto;
+  padding: 0 40px;
+  width: 100%;
+}
+
+header {
+  background-color: #e8e8e8;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.nav-links a {
+  color: #333;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: #666;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background-color: #a8a8a8;
+  border-radius: 25px;
+  padding: 5px 5px 5px 20px;
+  min-width: 350px;
+}
+
+.search-input {
+  background: transparent;
+  border: none;
+  color: white;
+  font-style: italic;
+  font-size: 16px;
+  width: 100%;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.search-btn {
+  background-color: #333;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 10px;
+  flex-shrink: 0;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-signup {
+  background-color: #333;
+  color: white;
+  border: 2px solid #333;
+  padding: 10px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.btn-login {
+  background-color: transparent;
+  color: #000;
+  border: 2px solid #333;
+  padding: 10px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.main-title {
+  text-align: center;
+  font-size: 42px;
+  margin-bottom: 60px;
+  color: #333;
+}
+
+.profiles-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  margin-bottom: 80px;
+  align-items: stretch;
+}
+
+.profile-card {
+  background-color: #4a4a4a;
+  border-radius: 15px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.card-header {
+  position: relative;
+  padding: 20px;
+  text-align: center;
+}
+
+.add-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+  z-index: 1;
+}
+
+.profile-image-container {
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 15px;
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid #555;
+  object-fit: cover;
+}
+
+.profile-name {
+  color: white;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.interests {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+}
+
+.interest-tag {
+  background-color: #888;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.card-body {
+  background-color: #d4d4d4;
+  padding: 20px;
+  color: #000;
+  flex-grow: 1;
+}
+
+.email {
+  font-size: 13px;
+  margin-bottom: 12px;
+  font-weight: bold;
+}
+
+.bio {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.loading-text {
+  text-align: center;
+  font-size: 20px;
+  color: #666;
+  margin-top: 50px;
+}
+
+.no-results {
+  text-align: center;
+  color: #666;
+  grid-column: 1 / -1;
+}
+
+footer {
+  background-color: #3a3a3a;
+  padding: 40px;
+  text-align: center;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.social-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.instagram { background: linear-gradient(45deg, #f09433, #bc1888); }
+.twitter { background-color: #000; }
+.youtube { background-color: #ff0000; }
