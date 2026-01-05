@@ -1,21 +1,26 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
+import { createClient } from '@supabase/supabase-js';
+
+// --- INITIALIZE SUPABASE ---
+const supabase = createClient(
+  'https://uzivmqlttdyolxanevfm.supabase.co', 
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6aXZtcWx0dGR5b2x4YW5ldmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MTc0NzMsImV4cCI6MjA4MzE5MzQ3M30.XLYw_Y8g4W8-B3k61nGDZ5a-OwzbFJmSXpLKnL0Gr98'
+);
 
 // --- COMPONENTS ---
 
-const NavBar = () => {
-  return (
-    <nav className="nav-links">
-      <Link to="/">Home</Link>
-      <Link to="/network">Network</Link>
-      <a href="#profile">Profile</a>
-      <a href="#circle">My Circle</a>
-    </nav>
-  );
-};
+const NavBar = () => (
+  <nav className="nav-links">
+    <Link to="/">Home</Link>
+    <Link to="/network">Network</Link>
+    <a href="#profile">Profile</a>
+    <a href="#circle">My Circle</a>
+  </nav>
+);
 
-const ProfileCard = ({ name, email, bio, interests, imageUrl, major, gradYear }: any) => {
+const ProfileCard = ({ name, email, bio, imageUrl, major, gradYear }: any) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   return (
@@ -32,22 +37,57 @@ const ProfileCard = ({ name, email, bio, interests, imageUrl, major, gradYear }:
           <img src={imageUrl} alt={name} className="profile-image" />
         </div>
         <div className="profile-name">{name}</div>
-        
         <div className="interests">
-          {/* Requirement: Display API fields or original interests */}
-          {interests ? interests.map((interest: string, index: number) => (
-            <span key={index} className="interest-tag">{interest}</span>
-          )) : (
-            <>
-              <span className="interest-tag">{major}</span>
-              <span className="interest-tag">{gradYear}</span>
-            </>
-          )}
+          <span className="interest-tag">{major}</span>
+          <span className="interest-tag">{gradYear}</span>
         </div>
       </div>
       <div className="card-body">
         <div className="email">{email}</div>
         <div className="bio">{bio}</div>
+      </div>
+    </div>
+  );
+};
+
+// --- AUTH COMPONENT ---
+const AuthUI = ({ onLoginSuccess }: any) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
+
+  const handleAuth = async () => {
+    if (isSignUp) {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) alert(error.message);
+      else alert("Check your email for a confirmation link!");
+    } else {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) alert(error.message);
+      else if (data.session) onLoginSuccess(data.session);
+    }
+  };
+
+  return (
+    <div className="auth-container" style={{ padding: '40px', textAlign: 'center', backgroundColor: '#f4f4f4', borderRadius: '15px', maxWidth: '400px', margin: '40px auto' }}>
+      <h2>{isSignUp ? "Create Account" : "Login to Network"}</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <input 
+          type="email" placeholder="Email" value={email} 
+          onChange={(e) => setEmail(e.target.value)} 
+          style={{ padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+        />
+        <input 
+          type="password" placeholder="Password" value={password} 
+          onChange={(e) => setPassword(e.target.value)} 
+          style={{ padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+        />
+        <button onClick={handleAuth} className="btn-signup" style={{ padding: '10px' }}>
+          {isSignUp ? "Register" : "Sign In"}
+        </button>
+        <p onClick={() => setIsSignUp(!isSignUp)} style={{ cursor: 'pointer', color: '#007bff', fontSize: '14px' }}>
+          {isSignUp ? "Already have an account? Login" : "Don't have an account? Sign Up"}
+        </p>
       </div>
     </div>
   );
@@ -64,80 +104,52 @@ const HomePage = ({ searchTerm, filteredProfiles }: any) => (
           <ProfileCard key={index} {...profile} />
         ))
       ) : (
-        <p className="no-results">No profiles found matching "{searchTerm}"</p>
+        <p style={{ textAlign: 'center', width: '100%' }}>No matches found for "{searchTerm}"</p>
       )}
     </div>
   </main>
 );
 
-const NetworkPage = () => {
+const NetworkPage = ({ session }: any) => {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Requirement: Fetch all users from your new PostgreSQL-connected API
   useEffect(() => {
+    if (!session) return;
     const fetchUsers = async () => {
       try {
-        // Pointing to your local Node/Express backend
-        const response = await fetch('http://localhost:3000/users');
+        const response = await fetch('http://localhost:3000/users/profiles', {
+          headers: { 'Authorization': `Bearer ${session.access_token}` }
+        });
         const data = await response.json();
         setUsers(data); 
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error:", error);
         setLoading(false);
       }
     };
     fetchUsers();
-  }, []);
+  }, [session]);
 
-  // Additional Requirement: POST /users endpoint connectivity
-  const handleAddUser = async () => {
-    const newUser = {
-      first_name: "New",
-      last_name: "User",
-      email: `user${Date.now()}@example.com`
-    };
-
-    try {
-      const response = await fetch('http://localhost:3000/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newUser),
-      });
-
-      if (response.ok) {
-        const savedUser = await response.json();
-        setUsers((prev) => [...prev, savedUser]);
-      }
-    } catch (error) {
-      console.error("Error posting user:", error);
-    }
-  };
+  if (!session) return <AuthUI onLoginSuccess={() => window.location.reload()} />;
 
   return (
     <main>
       <h1 className="main-title">Global Network</h1>
-      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <button onClick={handleAddUser} className="btn-signup">Add User (+)</button>
+      <div className="profiles-container">
+        {loading ? <p>Loading...</p> : users.map((user: any) => (
+          <ProfileCard 
+            key={user.id}
+            name={`${user.first_name} ${user.last_name}`}
+            email={user.email}
+            bio={user.user_profiles?.bio || "No bio set."}
+            major="Member"
+            gradYear="N/A"
+            imageUrl="https://placehold.co/400x400?text=Member"
+          />
+        ))}
       </div>
-      {loading ? (
-        <p className="loading-text">Loading from database...</p>
-      ) : (
-        <div className="profiles-container">
-          {users.map((user: any) => (
-            <ProfileCard 
-              key={user.id}
-              name={`${user.first_name} ${user.last_name}`}
-              email={user.email}
-              bio={user.bio || "Database User"}
-              major={user.major || "PostgreSQL"}
-              gradYear={user.graduation_year || "2026"}
-              imageUrl={user.profile_picture_url || "https://placehold.co/400x400?text=User"}
-            />
-          ))}
-        </div>
-      )}
     </main>
   );
 };
@@ -146,29 +158,38 @@ const NetworkPage = () => {
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [session, setSession] = useState<any>(null);
 
-  // Restored original three profiles exactly as they were
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
+    return () => subscription.unsubscribe();
+  }, []);
+
   const allProfiles = [
     {
       name: "Breeze",
       email: "connect@chrisbrown.com",
-      bio: "I am a multi-platinum R&B singer, dancer, and actor who first rose to global prominence as a teenager.",
-      interests: ["Music", "Dance", "Nature"],
-      imageUrl: "https://ntvb.tmsimg.com/assets/assets/499496_v9_bc.jpg"
+      bio: "I am a multi-platinum R&B singer, dancer, and actor.",
+      imageUrl: "https://ntvb.tmsimg.com/assets/assets/499496_v9_bc.jpg",
+      major: "Music",
+      gradYear: "2005"
     },
     {
       name: "Miky",
       email: "connect@michrealjackson.com",
-      bio: "I am the 'King of Pop,' a global cultural icon who redefined the music industry through my groundbreaking albums like Thriller.",
-      interests: ["Music", "Dance", "Video Games"],
-      imageUrl: "https://impro.usercontent.one/appid/oneComWsb/domain/jackson-source.com/media/jackson-source.com/onewebmedia/Michael%20Jackson%202008.jpg?etag=%223c5a8c-60cf06bd%22&sourceContentType=image%2Fjpeg&ignoreAspectRatio&resize=1554%2B2071&extract=508%2B32%2B840%2B840&quality=85"
+      bio: "I am the 'King of Pop,' a global cultural icon who redefined the music industry.",
+      imageUrl: "https://impro.usercontent.one/appid/oneComWsb/domain/jackson-source.com/media/jackson-source.com/onewebmedia/Michael%20Jackson%202008.jpg?etag=%223c5a8c-60cf06bd%22&sourceContentType=image%2Fjpeg&ignoreAspectRatio&resize=1554%2B2071&extract=508%2B32%2B840%2B840&quality=85",
+      major: "Dance",
+      gradYear: "1979"
     },
     {
       name: "Will smithy",
       email: "connect@willsmith.com",
-      bio: "I am an Academy Award-winning actor and Grammy-winning rapper, who transitioned from 'The Fresh Prince of Bel-Air' to Hollywood.",
-      interests: ["Acting", "Tennis", "Reading"],
-      imageUrl: "https://goldenglobes.com/wp-content/uploads/2023/10/will-smith-c-hfpa-2016.jpg?w=600"
+      bio: "I am an Academy Award-winning actor and Grammy-winning rapper.",
+      imageUrl: "https://goldenglobes.com/wp-content/uploads/2023/10/will-smith-c-hfpa-2016.jpg?w=600",
+      major: "Acting",
+      gradYear: "1990"
     }
   ];
 
@@ -179,41 +200,57 @@ function App() {
   return (
     <BrowserRouter>
       <div className="App">
-        <header>
-        <div className="search-container">
-          <input 
-            type="text" 
-            placeholder="What are you looking for?" 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-          <button className="search-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m21 21-4.35-4.35"/>
-            </svg>
-          </button>
-        </div>
-          <NavBar />
-          <div className="auth-buttons">
-            <button className="btn-signup">Sign up</button>
-            <button className="btn-login">Login</button>
+      <header>
+          <div className="search-container" style={{ display: 'flex', alignItems: 'center' }}>
+            <input 
+              type="text" 
+              placeholder="Who are you looking for?" // Updated Placeholder
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+            {/* Search Icon Button */}
+            <button 
+              className="search-btn" 
+              style={{ 
+                marginLeft: '-40px', // Pulls the button into the input bar visually
+                background: 'none', 
+                border: 'none', 
+                cursor: 'pointer' 
+              }}
+              onClick={() => {
+                // This triggers the filter logic already existing in your App component
+                console.log("Searching for:", searchTerm);
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
           </div>
-        </header>
+
+          <NavBar />
+
+          <div className="auth-buttons">
+            {session ? (
+              <>
+                <span style={{ marginRight: '10px' }}>{session.user.email}</span>
+                <button className="btn-login" onClick={() => supabase.auth.signOut()}>Logout</button>
+              </>
+            ) : (
+              <>
+                <Link to="/network"><button className="btn-login" style={{ marginRight: '10px' }}>Login</button></Link>
+                <Link to="/network"><button className="btn-signup">Sign Up</button></Link>
+              </>
+            )}
+          </div>
+</header>
 
         <Routes>
           <Route path="/" element={<HomePage searchTerm={searchTerm} filteredProfiles={filteredProfiles} />} />
-          <Route path="/network" element={<NetworkPage />} />
+          <Route path="/network" element={<NetworkPage session={session} />} />
         </Routes>
-
-        <footer>
-          <div className="social-icons">
-             <div className="social-icon instagram"><svg viewBox="0 0 24 24" width="28" height="28" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div>
-             <div className="social-icon twitter"><svg viewBox="0 0 24 24" width="28" height="28" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>
-             <div className="social-icon youtube"><svg viewBox="0 0 24 24" width="28" height="28" fill="white"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
-          </div>
-        </footer>
       </div>
     </BrowserRouter>
   );
