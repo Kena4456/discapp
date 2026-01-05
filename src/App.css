@@ -89,6 +89,7 @@ header {
   justify-content: center;
   cursor: pointer;
   margin-left: 10px;
+  flex-shrink: 0;
 }
 
 .auth-buttons {
@@ -144,6 +145,24 @@ header {
   text-align: center;
 }
 
+.add-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+  z-index: 1;
+}
+
 .profile-image-container {
   width: 140px;
   height: 140px;
@@ -164,13 +183,19 @@ header {
   margin-bottom: 15px;
 }
 
+.interests {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+}
+
 .interest-tag {
   background-color: #888;
   color: white;
   padding: 4px 12px;
   border-radius: 15px;
   font-size: 12px;
-  margin: 2px;
   display: inline-block;
 }
 
